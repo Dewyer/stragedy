@@ -7,6 +7,19 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = "0.4.4"
-rocket_contrib = "0.4.4"
 lib = {path="../lib"}
+bson = "0.14.1"
+dotenv = "0.15.0"
+dotenv_codegen = "0.15.0"
+
+[ dependencies.rocket]
+version="0.4.4"
+default-features=false
+
+[dependencies.rocket_contrib]
+version = "0.4.4"
+
+[dependencies.mongodb]
+version = "0.10.0"
+default-features = false
+features = ["sync"]
