@@ -12,5 +12,7 @@ fn index() -> &'static str {
 }
 
 fn main() {
-    rocket::ignite().mount("/api", routes![index]).launch();
+    rocket::ignite().mount("/api", routes![index,
+        crate::controllers::public_sites::register
+    ]).launch();
 }

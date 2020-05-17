@@ -1,7 +1,7 @@
 use rocket_contrib::json::Json;
 use lib::ApiEmptyResponse;
 
-#[get("/api/register")]
+#[get("/register")]
 pub fn register() -> Json<ApiEmptyResponse>
 {
 	Json(ApiEmptyResponse
