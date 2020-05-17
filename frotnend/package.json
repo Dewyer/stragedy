@@ -1,0 +1,21 @@
+{
+  "name": "yew-wasm-pack-minimal",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/yewstack/yew-wasm-pack-minimal",
+  "author": "Barnabás Rátki <barna.ratki@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn pack-up && serve ./pkg",
+    "pack-up":"yarn build && yarn build-styles && yarn copy-public && yarn bundle",
+    "build": "wasm-pack build --target web",
+    "bundle": "rollup ./main.js --format iife --file ./pkg/bundle.js",
+    "build-styles": "sass ./styles/app.scss ./pkg/app.css",
+    "copy-public": "node -e \"var copy = require('copy-dir');copy.sync('./public','./pkg');\""
+  },
+  "dependencies": {
+    "copy-dir": "^1.2.0",
+    "sass": "^1.26.5",
+    "serve": "^11.3.0"
+  }
+}
