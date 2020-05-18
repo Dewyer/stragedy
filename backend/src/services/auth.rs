@@ -9,8 +9,12 @@ use crate::error::ApiError;
 use chrono::prelude::*;
 use std::ops::Add;
 use chrono::Duration;
+use bson::Document;
+use crate::repos::generic_repo::GenericRepo;
+use crate::helpers::updater::UpdateExp;
+use crate::helpers::query::QueryExp;
 
-pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(),Box<dyn Error>>
+pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(),ApiError>
 {
 	let email_re = regex::Regex::new(r#"[^@]+@[^\.]+\..+"#).unwrap();
 	let salt = services::crypto::generate_salt();
@@ -18,11 +22,17 @@ pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(
 
 	if !email_re.is_match(&data.email)
 	{
-		return Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other,"Email is bad")));
+		return Err(ApiError::new("email-bad"));
+	}
+
+	let user_already = repo.player_repo.find_by_filter(doc!{"$or":[{"username": &data.username},{"email":&data.email}] });
+	if user_already.is_some()
+	{
+		return Err(ApiError::new("user-exists"));
 	}
 
     let res = repo.player_repo.insert_model(&Player{
-		id:None,
+		id:Some(bson::oid::ObjectId::new().unwrap()),
 		username: data.username.clone(),
 		email: data.email.clone(),
 		password_salt: salt,
@@ -44,7 +54,7 @@ pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Res
 
 	if services::crypto::has_password(&login_info.password,&player)
 	{
-		let player_id = player.id.unwrap().to_hex();
+		let player_id = player.id.as_ref().unwrap().to_hex();
 		let claim = models::player::JwtClaims
 		{
 			player_id:player_id.clone(),
@@ -59,7 +69,12 @@ pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Res
 			expiration
 		};
 		let player_token_bson = bson::to_bson(&player_token).unwrap();
-		repo.player_repo.update_by_doc(&doc!{"_id":&player_id },&doc!{"token": player_token_bson})?;
+		let mut to_update = UpdateExp::new().set("token",player_token).doc();
+		let mut filter = QueryExp::new_by_id(player.id.as_ref().unwrap()).doc();
+
+		println!("was to update: {:?}",to_update);
+
+		repo.player_repo.update_by_doc(&filter,&to_update)?;
 
 		Ok(responses::LoginPlayerResponse{
 			jwt:jwt_token,

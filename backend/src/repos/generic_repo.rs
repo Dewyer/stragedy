@@ -74,7 +74,7 @@ where T : serde::Serialize + serde::Deserialize<'de>
 				}
 				else
 				{
-					Err(ApiError::new("update-err"))
+					Err(ApiError::new("updated-0"))
 				}
 			},
 			Err(er)=> Err(ApiError::new("update-err"))

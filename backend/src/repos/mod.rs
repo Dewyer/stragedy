@@ -1,4 +1,6 @@
 pub mod generic_repo;
+pub mod seeder;
+
 use mongodb::sync::{Client,Database};
 use bson::Document;
 use std::error::Error;

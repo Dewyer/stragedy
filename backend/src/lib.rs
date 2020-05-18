@@ -4,6 +4,7 @@ pub mod controllers;
 pub mod services;
 pub mod models;
 pub mod error;
+pub mod helpers;
 
 #[cfg(test)] pub mod tests;
 
@@ -35,8 +36,12 @@ pub fn rocket() -> rocket::Rocket
 	}
 
 	let repo = repo.unwrap();
+	println!("Seeding database!");
+	repos::seeder::seed(&repo);
+
 	rocket::ignite().mount("/api", routes![index,
-        crate::controllers::public_sites::register
+        crate::controllers::public_sites::register,
+        crate::controllers::public_sites::login
     ])
 	.manage(repo)
 }

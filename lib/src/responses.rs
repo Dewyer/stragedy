@@ -1,5 +1,5 @@
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct LoginPlayerResponse
 {
 	pub jwt:String,
