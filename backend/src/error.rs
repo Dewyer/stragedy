@@ -9,6 +9,14 @@ pub struct ApiError
 
 impl ApiError
 {
+	pub fn new(status:&str) -> Self
+	{
+		ApiError
+		{
+			status:status.to_string()
+		}
+	}
+
 	pub fn get_status(&self) -> &str
 	{
 		&self.status

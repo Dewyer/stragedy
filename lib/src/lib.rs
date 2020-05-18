@@ -2,14 +2,14 @@
 pub mod requests;
 pub mod responses;
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,Debug)]
 pub struct ApiResponse<T>{
     pub content:Option<T>,
     pub error:bool,
     pub status:String
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,Debug)]
 pub struct ApiEmptyResponse
 {
     pub error:bool,

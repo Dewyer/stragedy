@@ -8,7 +8,7 @@ use rocket::State;
 use std::error::Error;
 use lib::responses::LoginPlayerResponse;
 
-#[get("/register",data="<player>")]
+#[post("/register",data="<player>")]
 pub fn register(player:Json<requests::CreatePlayerRequest>,repo:State<Repo>) -> Json<ApiEmptyResponse>
 {
 	let res =services::auth::create_player(player.into_inner(),&repo);
@@ -19,7 +19,7 @@ pub fn register(player:Json<requests::CreatePlayerRequest>,repo:State<Repo>) -> 
 	})
 }
 
-#[get("/login",data="<login_info>")]
+#[post("/login",data="<login_info>")]
 pub fn login(login_info:Json<requests::LoginPlayerRequest>, repo:State<Repo>) -> Json<ApiResponse<responses::LoginPlayerResponse>>
 {
 	Json(ApiResponse

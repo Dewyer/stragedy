@@ -17,8 +17,12 @@ pub struct Player
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlayerToken
 {
-	sec_token:String,
-	expiration:DateTime<Utc>
+	pub sec_token:String,
+	pub expiration:DateTime<Utc>
 }
 
-
+#[derive(Debug, Serialize, Deserialize)]
+pub struct JwtClaims {
+	pub player_id: String,
+	pub token: String
+}

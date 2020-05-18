@@ -1,16 +1,16 @@
-pub mod player_repo;
-
+pub mod generic_repo;
 use mongodb::sync::{Client,Database};
 use bson::Document;
 use std::error::Error;
-use crate::repos::player_repo::PlayerRepo;
+use crate::models::player::Player;
+use crate::repos::generic_repo::GenericRepo;
 
 pub struct Repo
 {
     client:Client,
 	database:Database,
 
-	pub player_repo:PlayerRepo
+	pub player_repo:GenericRepo<Player>
 }
 
 impl Repo
@@ -26,14 +26,7 @@ impl Repo
         {
             client:client,
 			database:db,
-			player_repo: PlayerRepo::new(pc)
+			player_repo: GenericRepo::new(pc)
         })
     }
 }
-
-/*
-pub fn easy_to_doc<'r,T>(modell:T) -> &'r Document
-{
-
-}
-*/
