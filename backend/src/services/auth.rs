@@ -55,14 +55,15 @@ pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Res
 	if services::crypto::has_password(&login_info.password,&player)
 	{
 		let player_id = player.id.as_ref().unwrap().to_hex();
+		let expiration = Utc::now() + Duration::days(1);
 		let claim = models::player::JwtClaims
 		{
 			player_id:player_id.clone(),
-			token:services::crypto::generate_random_crypto_string(64)
+			token:services::crypto::generate_random_crypto_string(64),
+			exp:expiration.clone().timestamp_millis() as u64
 		};
 
 		let jwt_token = services::crypto::issue_jwt(&claim)?;
-		let expiration = Utc::now() + Duration::days(1);
 		let player_token = PlayerToken
 		{
 			sec_token:claim.token,

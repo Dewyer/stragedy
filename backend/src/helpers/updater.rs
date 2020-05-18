@@ -23,7 +23,7 @@ impl UpdateExp
 		{
 			let mut old = self.doc.get("$set").unwrap().as_document().unwrap().clone();
 			self.doc.remove("$set");
-			old.insert(what,bson::to_bson(&to).unwrap())
+			old.insert(what,bson::to_bson(&to).unwrap());
 			self.doc.insert("$set",old);
 		}
 		else {

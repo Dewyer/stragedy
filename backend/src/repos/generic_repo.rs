@@ -4,6 +4,7 @@ use std::marker::PhantomData;
 use bson::Document;
 use crate::repos;
 use crate::error::ApiError;
+use crate::helpers;
 
 pub struct GenericRepo<T>
 {
@@ -51,9 +52,9 @@ where T : serde::Serialize + serde::Deserialize<'de>
 		Ok(())
 	}
 
-	pub fn find_by_id(&self,id:&str) -> Option<T>
+	pub fn find_by_id(&self,id:bson::oid::ObjectId) -> Option<T>
 	{
-		let query_res:Result<Option<bson::Document>,mongodb::error::Error> = self.collection.find_one(doc!{"_id":id},None);
+		let query_res:Result<Option<bson::Document>,mongodb::error::Error> = self.collection.find_one(helpers::query::QueryExp::new_by_id(&id).doc(),None);
 		self.unwrap_query(query_res)
 	}
 

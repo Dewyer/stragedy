@@ -1,5 +1,5 @@
 use rocket::local::Client;
-use rocket::http::{ContentType, Cookie,Status};
+use rocket::http::{ContentType, Cookie,Status,Header};
 use lib::requests;
 use lib::responses;
 use crate::services;
@@ -38,4 +38,15 @@ pub fn login_and_use_jwt()
 	let resp_obj = serde_json::from_str::<lib::ApiResponse<responses::LoginPlayerResponse>>(&response.body_string().unwrap()).unwrap();
 	println!("{:?}",resp_obj);
 	assert_eq!(resp_obj.error,false);
+
+	// Npw lets use that for authorization
+	let jwt = resp_obj.content.unwrap().jwt.clone();
+	println!("trying jwt : {}",jwt);
+	let mut resp2 = client.get("/api/who")
+		.header(Header::new("Authorization", jwt))
+		.dispatch();
+
+	assert_eq!(resp2.status(),Status::Ok);
+	let resp2_obj = serde_json::from_str::<lib::ApiEmptyResponse>(&resp2.body_string().unwrap()).unwrap();
+	assert_eq!(resp2_obj.status,"test1");
 }

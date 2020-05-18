@@ -41,7 +41,8 @@ pub fn rocket() -> rocket::Rocket
 
 	rocket::ignite().mount("/api", routes![index,
         crate::controllers::public_sites::register,
-        crate::controllers::public_sites::login
+		crate::controllers::public_sites::login,
+		crate::controllers::public_sites::who_am_i
     ])
 	.manage(repo)
 }
