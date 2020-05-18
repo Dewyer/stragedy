@@ -2,10 +2,14 @@
 pub mod repos;
 pub mod controllers;
 pub mod services;
+pub mod models;
+pub mod error;
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rocket_contrib;
 #[macro_use] extern crate dotenv_codegen;
+#[macro_use] extern crate serde_derive;
+
 extern crate lib;
 
 use crate::repos::Repo;

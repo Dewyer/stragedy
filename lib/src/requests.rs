@@ -6,3 +6,10 @@ pub struct CreatePlayerRequest
 	pub email:String,
 	pub password:String
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct LoginPlayerRequest
+{
+	pub username:String,
+	pub password:String
+}

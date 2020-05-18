@@ -1,8 +1,10 @@
 use crate::repos::Repo;
-use lib::player::Player;
+use crate::models::player::Player;
 use lib::requests;
+use lib::responses;
 use std::error::Error;
 use crate::services;
+use crate::error::ApiError;
 
 pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(),Box<dyn Error>>
 {
@@ -16,11 +18,17 @@ pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(
 	}
 
     let res = repo.player_repo.insert_player(&Player{
+		id:None,
 		username: data.username.clone(),
 		email: data.email.clone(),
 		password_salt: salt,
-		password_hash: pwd
+		password_hash: pwd,
+		token:None
 	})?;
 
 	Ok(())
+}
+
+pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Result<responses::LoginPlayerResponse,ApiError>
+{
 }

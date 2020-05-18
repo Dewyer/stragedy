@@ -4,8 +4,6 @@ version = "0.1.0"
 authors = ["Barnabás Rátki <barna.ratki@gmail.com>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 lib = {path="../lib"}
 bson = "0.14.1"
@@ -15,6 +13,10 @@ rsgen = "0.2"
 sha2 = "0.8.1"
 hex = "0.4.2"
 regex = "1"
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
 
 [ dependencies.rocket]
 version="0.4.4"

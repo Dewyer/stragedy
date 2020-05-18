@@ -1,6 +1,7 @@
 pub mod player_repo;
 
 use mongodb::sync::{Client,Database};
+use bson::Document;
 use std::error::Error;
 use crate::repos::player_repo::PlayerRepo;
 
@@ -29,16 +30,10 @@ impl Repo
         })
     }
 }
+
 /*
-impl<'a, 'r> FromRequest<'a, 'r> for Repo {
-    type Error = ();
+pub fn easy_to_doc<'r,T>(modell:T) -> &'r Document
+{
 
-    fn from_request(request: &'a Request<'r>) -> Outcome<Repo, ()> {
-        let repo = request.guard::<State<Repo>>()?;
-
-        match repo {
-            Ok(db) => Outcome::Success(db),
-            Err(_) => Outcome::Failure((Status::ServiceUnavailable, ())),
-        }
-    }
-}*/
+}
+*/
