@@ -2,16 +2,17 @@ use rocket_contrib::json::Json;
 use lib::ApiEmptyResponse;
 use crate::services;
 use crate::repos::Repo;
+use lib::requests::CreatePlayerRequest;
+use rocket::State;
 
-#[get("/register")]
-pub fn register(repo:Repo) -> Json<ApiEmptyResponse>
+#[get("/register",data="<player>")]
+pub fn register(player:Json<CreatePlayerRequest>,repo:State<Repo>) -> Json<ApiEmptyResponse>
 {
-	println!("not an error");
-	services::auth::create_user(&repo);
-	
+	let res =services::auth::create_player(player.into_inner(),&repo);
+
 	Json(ApiEmptyResponse
 	{
-		error:false,
-		status:"hello".to_string()
+		error:res.is_err(),
+		status:"".to_string()
 	})
 }

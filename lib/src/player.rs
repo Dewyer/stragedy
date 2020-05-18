@@ -1,8 +1,8 @@
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Player
 {
-	username:String,
-	email:String,
-	password_salt:String,
-	password_hash:String
+	pub username:String,
+	pub email:String,
+	pub password_salt:String,
+	pub password_hash:String
 }

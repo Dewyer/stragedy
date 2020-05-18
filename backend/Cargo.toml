@@ -11,6 +11,10 @@ lib = {path="../lib"}
 bson = "0.14.1"
 dotenv = "0.15.0"
 dotenv_codegen = "0.15.0"
+rsgen = "0.2"
+sha2 = "0.8.1"
+hex = "0.4.2"
+regex = "1"
 
 [ dependencies.rocket]
 version="0.4.4"
