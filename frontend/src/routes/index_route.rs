@@ -34,9 +34,12 @@ impl Component for IndexRoute {
 
 	fn view(&self) -> Html {
 		html! {
-            <div>
-				<p>{"Index pageee"}</p>
-            </div>
+            <div class={"index-container"}>
+				<div class={"header sig-border"}><img src={"/static/icon.png"}/><span>{"STRAGEDY"}</span></div>
+				<div class={"auth-container"}>
+
+				</div>
+			</div>
         }
 	}
 }
