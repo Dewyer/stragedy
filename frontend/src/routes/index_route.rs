@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use crate::components::register_form::RegisterForm;
 
 pub struct IndexRoute {
 	link: ComponentLink<Self>
@@ -36,8 +37,14 @@ impl Component for IndexRoute {
 		html! {
             <div class={"index-container"}>
 				<div class={"header sig-border"}><img src={"/static/icon.png"}/><span>{"STRAGEDY"}</span></div>
+				<div class={"world-info-wrapper"}>
+					<div class={"world-info sig-border"}>
+						<span class={"s-header"}>{"World Info"}</span>
+						{"Fuck there is no info yet :/"}
+					</div>
+				</div>
 				<div class={"auth-container"}>
-
+					<RegisterForm />
 				</div>
 			</div>
         }

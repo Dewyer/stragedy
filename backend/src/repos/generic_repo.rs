@@ -3,7 +3,7 @@ use std::error::Error;
 use std::marker::PhantomData;
 use bson::Document;
 use crate::repos;
-use crate::error::ApiError;
+use lib::error::ApiError;
 use crate::helpers;
 
 pub struct GenericRepo<T>
@@ -75,10 +75,10 @@ where T : serde::Serialize + serde::Deserialize<'de>
 				}
 				else
 				{
-					Err(ApiError::new("updated-0"))
+					Err(ApiError::ZeroModified)
 				}
 			},
-			Err(er)=> Err(ApiError::new("update-err"))
+			Err(er)=> Err(ApiError::UpdateFailed)
 		}
 	}
 }

@@ -1,17 +1,19 @@
 #[macro_use] extern crate serde_derive;
 pub mod requests;
 pub mod responses;
+pub mod regex;
+pub mod error;
 
 #[derive(Serialize,Deserialize,Debug)]
-pub struct ApiResponse<T>{
+pub struct ApiResponse<T,E>{
     pub content:Option<T>,
-    pub error:bool,
-    pub status:String
+    pub error:E
 }
 
+/*
 #[derive(Serialize,Deserialize,Debug)]
-pub struct ApiEmptyResponse
+pub struct ApiEmptyResponse<E>
 {
-    pub error:bool,
-    pub status:String
+    pub error:E
 }
+*/

@@ -1,0 +1,45 @@
+@import "paletta";
+@import "font";
+
+.custom-text-input
+{
+	border:none;
+	border-bottom: 2px $orange solid;
+	background-color: lighten($back-grey,30%);
+	font-size: 0.8rem;
+	color:white;
+	outline: none;
+	padding: 0.2rem;
+
+	@include use-fonts();
+
+	&::placeholder
+	{
+		color:darken(white,20%);
+		opacity: 0.6;
+	}
+}
+
+
+.custom-button
+{
+	@include use-fonts();
+	outline: none;
+	border: none;
+	background-color: $orange;
+	border-radius: 3px;
+	padding: 0.4rem 0.4rem;
+	color:white;
+
+	&:hover
+	{
+		background-color: darken($orange,10%);
+		color: darken(white,10%)
+	}
+
+	&:disabled
+	{
+		background-color: darken($back-grey,20%);
+		color: darken(gray,10%)
+	}
+}

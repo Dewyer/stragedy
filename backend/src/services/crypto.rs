@@ -3,7 +3,7 @@ use sha2::{Digest,Sha256};
 use crate::models::player::{Player, JwtClaims};
 use std::ptr::hash;
 use std::error::Error;
-use crate::error::ApiError;
+use lib::error::ApiError;
 
 pub fn generate_random_crypto_string(len:usize) -> String
 {
@@ -42,6 +42,6 @@ pub fn issue_jwt(claim:&JwtClaims) -> Result<String,ApiError>
 		&jsonwebtoken::EncodingKey::from_base64_secret(dotenv!("JWT_SECRET")).unwrap())
 	{
 		Ok(val) => Ok(val),
-		Err(er) => Err(ApiError::new("jwt-err"))
+		Err(er) => Err(ApiError::Other("jwt-err".to_string()))
 	}
 }

@@ -3,6 +3,7 @@ use rocket::http::{ContentType, Cookie,Status,Header};
 use lib::requests;
 use lib::responses;
 use crate::services;
+use lib::error::AuthError;
 
 #[test]
 pub fn register()
@@ -18,9 +19,9 @@ pub fn register()
 		.dispatch();
 
 	assert_eq!(response.status(),Status::Ok);
-	let resp_obj = serde_json::from_str::<lib::ApiEmptyResponse>(&response.body_string().unwrap()).unwrap();
+	let resp_obj = serde_json::from_str::<lib::ApiResponse<(),AuthError>>(&response.body_string().unwrap()).unwrap();
 	println!("{:?}",resp_obj);
-	assert_eq!(resp_obj.error,false);
+	assert_eq!(resp_obj.error,AuthError::NoError);
 }
 
 #[test]
@@ -35,9 +36,9 @@ pub fn login_and_use_jwt()
 		}).unwrap())
 		.dispatch();
 	assert_eq!(response.status(),Status::Ok);
-	let resp_obj = serde_json::from_str::<lib::ApiResponse<responses::LoginPlayerResponse>>(&response.body_string().unwrap()).unwrap();
+	let resp_obj = serde_json::from_str::<lib::ApiResponse<responses::LoginPlayerResponse,AuthError>>(&response.body_string().unwrap()).unwrap();
 	println!("{:?}",resp_obj);
-	assert_eq!(resp_obj.error,false);
+	assert_eq!(resp_obj.error,AuthError::NoError);
 
 	// Npw lets use that for authorization
 	let jwt = resp_obj.content.unwrap().jwt.clone();
@@ -47,6 +48,6 @@ pub fn login_and_use_jwt()
 		.dispatch();
 
 	assert_eq!(resp2.status(),Status::Ok);
-	let resp2_obj = serde_json::from_str::<lib::ApiEmptyResponse>(&resp2.body_string().unwrap()).unwrap();
-	assert_eq!(resp2_obj.status,"test1");
+	let resp2_obj = serde_json::from_str::<lib::ApiResponse<(),AuthError>>(&resp2.body_string().unwrap()).unwrap();
+	assert_eq!(resp2_obj.error,AuthError::Other("test1".to_string()));
 }

@@ -1,3 +1,4 @@
+@import "paletta";
 
 .index-container
 {
@@ -13,11 +14,90 @@
 		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
+		margin-top: 0.7rem;
 
 		& img
 		{
 			height: 2rem;
-			margin-left: 1rem;
+			margin-right: 1rem;
+		}
+	}
+}
+
+.world-info
+{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+
+	margin-top: 8%;
+	margin-bottom: 10%;
+
+	& .s-header
+	{
+		font-size: 20pt;
+		margin-bottom: 0.7rem;
+	}
+}
+
+.world-info-wrapper
+{
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.auth-container
+{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: row;
+	width: 100%;
+
+	& .auth-form
+	{
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: flex-start;
+		width: 18rem;
+
+		& .s-header
+		{
+			font-size: 25pt;
+			font-weight: bold;
+			margin-bottom: 0.8rem;
+		}
+
+		& .form-row
+		{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			margin: 0.2rem 0;
+			width: 100%;
+		}
+
+		& .form-submit
+		{
+			align-self: flex-end;
+			margin-top: 0.7rem;
+		}
+
+		& .form-error
+		{
+			color:$orange;
+			margin-top: 0.7rem;
+		}
+
+		& .form-success
+		{
+			color:$green;
+			margin-top: 0.7rem;
 		}
 	}
 }
@@ -27,3 +107,4 @@
 	border: 2px solid white;
 	padding: 0.6rem;
 }
+

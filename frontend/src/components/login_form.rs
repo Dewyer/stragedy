@@ -1,10 +1,7 @@
----
-to: src/components/<%= h.changeCase.snake(name) %>.rs
----
 use yew::prelude::*;
 use yew::Properties;
 
-pub struct <%= name %> {
+pub struct LoginForm {
 	link: ComponentLink<Self>
 }
 
@@ -13,12 +10,12 @@ pub enum Msg {
 }
 
 #[derive(Properties, Clone, PartialEq)]
-pub struct <%= name %>Props
+pub struct LoginFormProps
 {
 
 }
 
-impl Component for <%= name %> {
+impl Component for LoginForm {
 	type Message = Msg;
 	type Properties = ();
 

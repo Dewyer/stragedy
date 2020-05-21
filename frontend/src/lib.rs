@@ -1,7 +1,12 @@
+#![recursion_limit="512"]
+
 mod app;
 mod routes;
 mod components;
+pub mod api;
 
+#[macro_use] extern crate yew;
+#[macro_use] extern crate serde_json;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

@@ -5,7 +5,6 @@ use lib::requests;
 use lib::responses;
 use std::error::Error;
 use crate::services;
-use crate::error::ApiError;
 use chrono::prelude::*;
 use std::ops::Add;
 use chrono::Duration;
@@ -13,22 +12,23 @@ use bson::Document;
 use crate::repos::generic_repo::GenericRepo;
 use crate::helpers::updater::UpdateExp;
 use crate::helpers::query::QueryExp;
+use lib::error::AuthError;
 
-pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(),ApiError>
+pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(),AuthError>
 {
-	let email_re = regex::Regex::new(r#"[^@]+@[^\.]+\..+"#).unwrap();
+	let email_re = lib::regex::get_email_regex();
 	let salt = services::crypto::generate_salt();
 	let pwd = services::crypto::hash_password(&data.password,&salt);
 
 	if !email_re.is_match(&data.email)
 	{
-		return Err(ApiError::new("email-bad"));
+		return Err(AuthError::BadEmail);
 	}
 
 	let user_already = repo.player_repo.find_by_filter(doc!{"$or":[{"username": &data.username},{"email":&data.email}] });
 	if user_already.is_some()
 	{
-		return Err(ApiError::new("user-exists"));
+		return Err(AuthError::UserExists);
 	}
 
     let res = repo.player_repo.insert_model(&Player{
@@ -43,12 +43,12 @@ pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(
 	Ok(())
 }
 
-pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Result<responses::LoginPlayerResponse,ApiError>
+pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Result<responses::LoginPlayerResponse,AuthError>
 {
 	let player = repo.player_repo.find_by_filter(doc!{"username": login_info.username});
 	if player.is_none()
 	{
-		return Err(ApiError::new("no-user"));
+		return Err(AuthError::NoUser);
 	}
 	let player = player.unwrap();
 
@@ -84,6 +84,6 @@ pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Res
 	}
 	else
 	{
-		Err(ApiError::new("wrong-password"))
+		Err(AuthError::WrongPassword)
 	}
 }

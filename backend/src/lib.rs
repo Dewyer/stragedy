@@ -3,7 +3,6 @@ pub mod repos;
 pub mod controllers;
 pub mod services;
 pub mod models;
-pub mod error;
 pub mod helpers;
 
 #[cfg(test)] pub mod tests;
@@ -19,6 +18,8 @@ pub mod helpers;
 extern crate lib;
 
 use crate::repos::Repo;
+use rocket_cors::{AllowedHeaders, AllowedOrigins, Error};
+use rocket::http::Method;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -39,10 +40,20 @@ pub fn rocket() -> rocket::Rocket
 	println!("Seeding database!");
 	repos::seeder::seed(&repo);
 
+	let allowed_origins = AllowedOrigins::some_exact(&["http://localhost:5000"]);
+	let cors = rocket_cors::CorsOptions {
+		allowed_origins,
+		allowed_methods: vec![Method::Get,Method::Post,Method::Put].into_iter().map(From::from).collect(),
+		allowed_headers: AllowedHeaders::All,
+		allow_credentials: true,
+		..Default::default()
+	}.to_cors().unwrap();
+
 	rocket::ignite().mount("/api", routes![index,
         crate::controllers::public_sites::register,
 		crate::controllers::public_sites::login,
 		crate::controllers::public_sites::who_am_i
     ])
 	.manage(repo)
+	.attach(cors)
 }
