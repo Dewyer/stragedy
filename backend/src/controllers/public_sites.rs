@@ -5,8 +5,9 @@ use crate::repos::Repo;
 use lib::requests;
 use lib::responses;
 use rocket::State;
-use crate::models::player::Player;
+use lib::models::player::Player;
 use lib::error::AuthError;
+use crate::models::player::PlayerGuard;
 
 #[post("/register",data="<player>")]
 pub fn register(player:Json<requests::CreatePlayerRequest>,repo:State<Repo>) -> Json<ApiResponse<(),AuthError>>
@@ -31,10 +32,10 @@ pub fn login(login_info:Json<requests::LoginPlayerRequest>, repo:State<Repo>) ->
 }
 
 #[get("/who")]
-pub fn who_am_i(player:Player) -> Json<ApiResponse<(),AuthError>>
+pub fn who_am_i(auth:PlayerGuard) -> Json<ApiResponse<(),AuthError>>
 {
 	Json(ApiResponse{
 		content:None,
-		error:AuthError::Other(player.username.clone()),
+		error:AuthError::Other(auth.player.username.clone()),
 	})
 }

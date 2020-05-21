@@ -2,7 +2,8 @@ use yew::prelude::*;
 use yew::services::{ConsoleService};
 use yew::{ComponentLink};
 use yew_router::{Switch,prelude::*};
-use crate::routes::{register_route::RegisterRoute, index_route::IndexRoute};
+use crate::routes::{register_route::RegisterRoute, index_route::IndexRoute,game_route::GameRoute};
+use yew_router::switch::Permissive;
 
 pub struct App
 {
@@ -11,10 +12,14 @@ pub struct App
 
 #[derive(Switch, Debug,Clone)]
 pub enum AppRoute {
+	#[to="/game"]
+	Game,
     #[to = "/register"]
     Register,
+	#[to= "/404"]
+	PageNotFound(Permissive<String>),
     #[to = "/"]
-    Index,
+    Index
 }
 
 impl Component for App {
@@ -42,9 +47,15 @@ impl Component for App {
                 <Router<AppRoute>
                         render = Router::render(|switch: AppRoute| {
                             match switch {
+								AppRoute::Game => html!{<GameRoute />},
                                 AppRoute::Register => html!{<RegisterRoute />},
+								AppRoute::PageNotFound(Permissive(Some(rt))) => html!{<p class={"four-o-four"}>{format!("Page not found : {} :/",rt.clone())}</p>},
+								AppRoute::PageNotFound(Permissive(None)) => html!{<p class={"four-o-four"}>{"Page not found!"}</p>},
                                 AppRoute::Index => html!{<IndexRoute />}
                             }
+                        })
+                        redirect = Router::redirect(|route: Route| {
+                            AppRoute::PageNotFound(Permissive(Some(route.route)))
                         })
                 />
             </div>

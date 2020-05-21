@@ -1,6 +1,6 @@
 use rsgen::{gen_random_string, OutputCharsType};
 use sha2::{Digest,Sha256};
-use crate::models::player::{Player, JwtClaims};
+use lib::models::player::{Player, JwtClaims};
 use std::ptr::hash;
 use std::error::Error;
 use lib::error::ApiError;

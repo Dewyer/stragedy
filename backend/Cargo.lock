@@ -887,6 +887,8 @@ checksum = "b294d6fa9ee409a054354afc4352b0b9ef7ca222c69b8812cbea9e7d2bf3783f"
 name = "lib"
 version = "0.1.0"
 dependencies = [
+ "bson",
+ "chrono",
  "regex",
  "serde",
  "serde_derive",

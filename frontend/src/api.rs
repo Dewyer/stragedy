@@ -1,4 +1,4 @@
-use lib::requests::CreatePlayerRequest;
+use lib::requests::*;
 use lib::{ApiResponse};
 use lib::error::{AuthError,ApiError};
 use http::Request;
@@ -6,6 +6,7 @@ use http::Response;
 use yew::services::fetch::{FetchService,FetchTask};
 use yew::prelude::*;
 use crate::api;
+use lib::responses::LoginPlayerResponse;
 
 pub const SERVER_URL:&str = "http://localhost:8000";
 //https://envpvvdbty7wo.x.pipedream.net/
@@ -67,8 +68,20 @@ where Func: Fn(Result<Option<ResponseData>,ResponseErr>) -> ModellT::Message +'s
 	Err(ApiError::ServerError)
 }
 
+macro_rules! endpoint
+{
+	($name:ident,$route:expr,$Dat:ident,$Out:ident,$Err:ident) => (
+	pub fn $name<T,F>(data:$Dat,link:&ComponentLink<T>,to_msg:F) -> Result<FetchTask,ApiError>
+	where F: Fn(Result<Option<$Out>,$Err>) -> T::Message +'static , T : yew::Component
+	{
+		make_api_request($route,data,to_msg,link)
+	});
+}
+
 pub fn register<T,F>(data:CreatePlayerRequest,link:&ComponentLink<T>,to_msg:F) -> Result<FetchTask,ApiError>
 where F: Fn(Result<Option<()>,AuthError>) -> T::Message +'static , T : yew::Component
 {
 	make_api_request("/api/register",data,to_msg,link)
 }
+
+endpoint!(login,"/api/login",LoginPlayerRequest,LoginPlayerResponse,AuthError);

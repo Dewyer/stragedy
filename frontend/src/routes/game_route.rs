@@ -1,21 +1,20 @@
----
-to: src/routes/<%= h.changeCase.snake(name) %>.rs
----
 use yew::prelude::*;
 
-pub struct <%= name %> {
+pub struct GameRoute {
 	link: ComponentLink<Self>
 }
 
-route enum Msg {
+pub enum Msg {
 
 }
 
-impl Component for <%= name %> {
+impl Component for GameRoute {
 	type Message = Msg;
 	type Properties = ();
 
-	fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+	fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self
+	{
+
 		Self {
 			link
 		}
@@ -35,7 +34,7 @@ impl Component for <%= name %> {
 	fn view(&self) -> Html {
 		html! {
             <div>
-				<p>{"Hello !"}</p>
+				<p>{"Game !"}</p>
             </div>
         }
 	}

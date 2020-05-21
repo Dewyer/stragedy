@@ -1,6 +1,5 @@
 use crate::repos::Repo;
-use crate::models::player::{Player, PlayerToken};
-use crate::models;
+use lib::models::player::{Player, PlayerToken,JwtClaims};
 use lib::requests;
 use lib::responses;
 use std::error::Error;
@@ -31,14 +30,10 @@ pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(
 		return Err(AuthError::UserExists);
 	}
 
-    let res = repo.player_repo.insert_model(&Player{
-		id:Some(bson::oid::ObjectId::new().unwrap()),
-		username: data.username.clone(),
-		email: data.email.clone(),
-		password_salt: salt,
-		password_hash: pwd,
-		token:None
-	})?;
+	let mut player = Player::new(&data.username,&data.email,&pwd,&salt);
+	//player.controlled_planet_ids.push();
+
+    let res = repo.player_repo.insert_model(&player)?;
 
 	Ok(())
 }
@@ -56,7 +51,7 @@ pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Res
 	{
 		let player_id = player.id.as_ref().unwrap().to_hex();
 		let expiration = Utc::now() + Duration::days(1);
-		let claim = models::player::JwtClaims
+		let claim = JwtClaims
 		{
 			player_id:player_id.clone(),
 			token:services::crypto::generate_random_crypto_string(64),

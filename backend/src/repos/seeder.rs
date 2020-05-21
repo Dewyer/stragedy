@@ -1,5 +1,5 @@
 use crate::repos::Repo;
-use crate::models::player::Player;
+use lib::models::player::Player;
 use crate::services;
 use lib::requests;
 

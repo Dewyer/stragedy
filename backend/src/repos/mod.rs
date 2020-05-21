@@ -4,7 +4,7 @@ pub mod seeder;
 use mongodb::sync::{Client,Database};
 use bson::Document;
 use std::error::Error;
-use crate::models::player::Player;
+use lib::models::player::Player;
 use crate::repos::generic_repo::GenericRepo;
 
 pub struct Repo

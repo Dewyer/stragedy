@@ -1,19 +1,21 @@
 use yew::prelude::*;
 use crate::components::register_form::RegisterForm;
+use crate::components::login_form::LoginForm;
 
 pub struct IndexRoute {
-	link: ComponentLink<Self>
+	link: ComponentLink<Self>,
 }
 
 pub enum Msg {
 
 }
 
+
 impl Component for IndexRoute {
 	type Message = Msg;
 	type Properties = ();
 
-	fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+	fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		Self {
 			link
 		}
@@ -26,10 +28,8 @@ impl Component for IndexRoute {
 		true
 	}
 
-	fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-		// Should only return "true" if new properties are different to
-		// previously received properties.
-		// This component has no properties so we will always return "false".
+	fn change(&mut self, _props: Self::Properties) -> ShouldRender
+	{
 		false
 	}
 
@@ -45,6 +45,8 @@ impl Component for IndexRoute {
 				</div>
 				<div class={"auth-container"}>
 					<RegisterForm />
+					<span class={"or"}>{"OR"}</span>
+					<LoginForm />
 				</div>
 			</div>
         }

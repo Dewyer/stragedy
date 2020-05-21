@@ -54,3 +54,14 @@ Sci-fi strategy game web thing
                 - those are shootable
             - Fission or fusion energy
         - Shipyard
+
+### Tech
+Players controll planets
+player values are stored in player (like credits)
+
+Dep on time : 
+like resources : ic cc om
+
+Base Value, last_updated, gain_per_hour
+
+to prevent races ? idk : Transaction time should be recorded per querry

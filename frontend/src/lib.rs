@@ -4,6 +4,7 @@ mod app;
 mod routes;
 mod components;
 pub mod api;
+pub mod storage;
 
 #[macro_use] extern crate yew;
 #[macro_use] extern crate serde_json;
