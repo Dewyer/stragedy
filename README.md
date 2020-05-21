@@ -65,3 +65,8 @@ like resources : ic cc om
 Base Value, last_updated, gain_per_hour
 
 to prevent races ? idk : Transaction time should be recorded per querry
+
+### Math
+res ratio:
+
+2 1 1

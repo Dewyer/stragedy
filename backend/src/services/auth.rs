@@ -12,6 +12,7 @@ use crate::repos::generic_repo::GenericRepo;
 use crate::helpers::updater::UpdateExp;
 use crate::helpers::query::QueryExp;
 use lib::error::AuthError;
+use lib::models::planet::Planet;
 
 pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(),AuthError>
 {
@@ -31,9 +32,11 @@ pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(
 	}
 
 	let mut player = Player::new(&data.username,&data.email,&pwd,&salt);
-	//player.controlled_planet_ids.push();
+	let starter_planet = Planet::new();
+	player.controlled_planet_ids.push(starter_planet.id.as_ref().unwrap().clone());
 
-    let res = repo.player_repo.insert_model(&player)?;
+	let _res2 = repo.planet_repo.insert_model(&starter_planet)?;
+    let _res = repo.player_repo.insert_model(&player)?;
 
 	Ok(())
 }
@@ -65,8 +68,8 @@ pub fn login_player(login_info: requests::LoginPlayerRequest, repo:&Repo) -> Res
 			expiration
 		};
 		let player_token_bson = bson::to_bson(&player_token).unwrap();
-		let mut to_update = UpdateExp::new().set("token",player_token).doc();
-		let mut filter = QueryExp::new_by_id(player.id.as_ref().unwrap()).doc();
+		let to_update = UpdateExp::new().set("token",player_token).doc();
+		let filter = QueryExp::new_by_id(player.id.as_ref().unwrap()).doc();
 
 		println!("was to update: {:?}",to_update);
 
