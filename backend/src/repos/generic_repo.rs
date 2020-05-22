@@ -1,4 +1,4 @@
-use mongodb::sync::{Collection};
+use mongodb::sync::{Collection,Cursor};
 use std::error::Error;
 use std::marker::PhantomData;
 use bson::Document;
@@ -62,6 +62,40 @@ where T : serde::Serialize + serde::Deserialize<'de>
 	{
 		let query = self.collection.find_one(filter,None);
 		self.unwrap_query(query)
+	}
+
+	pub fn find_all_like(&self,filter:Document) -> Result<Vec<T>,ApiError>
+	{
+		let query:Result<Cursor,mongodb::error::Error> = self.collection.find(filter,None);
+		match query
+		{
+			Ok(cursor)=>
+				{
+					let mut res_vec:Vec<T> = Vec::new();
+					for result in cursor
+					{
+						match result
+						{
+							Ok(doc) => {
+								let modell_version = bson::from_bson::<T>(bson::Bson::Document(doc));
+								if let Ok(modell) = modell_version
+								{
+									res_vec.push(modell);
+								}
+							},
+							_ => {}
+						}
+					}
+
+					Ok(res_vec)
+				},
+			Err(_)=>Err(ApiError::ServerError)
+		}
+	}
+
+	pub fn get_all(&self) -> Result<Vec<T>,ApiError>
+	{
+		self.find_all_like(Document::new())
 	}
 
 	pub fn update_by_doc(&self,filter:&Document,doc:&Document) -> Result<(),ApiError>

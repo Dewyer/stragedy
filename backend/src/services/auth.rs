@@ -12,7 +12,7 @@ use crate::repos::generic_repo::GenericRepo;
 use crate::helpers::updater::UpdateExp;
 use crate::helpers::query::QueryExp;
 use lib::error::AuthError;
-use lib::models::planet::Planet;
+use lib::models::planet::{Planet, PlanetCoordinate};
 
 pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(),AuthError>
 {
@@ -32,7 +32,9 @@ pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(
 	}
 
 	let mut player = Player::new(&data.username,&data.email,&pwd,&salt);
-	let starter_planet = Planet::new();
+	let starter_coordinate = services::planet_manager::get_starter_planet_coordinate(&repo)?;
+	let starter_planet = Planet::new(starter_coordinate);
+
 	player.controlled_planet_ids.push(starter_planet.id.as_ref().unwrap().clone());
 
 	let _res2 = repo.planet_repo.insert_model(&starter_planet)?;

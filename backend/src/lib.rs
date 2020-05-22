@@ -26,8 +26,9 @@ fn index() -> &'static str {
 	"Hello, world!"
 }
 
-pub fn rocket() -> rocket::Rocket
+pub fn rocket(seed:bool) -> rocket::Rocket
 {
+	println!("Galaxy config {:?}",services::config::get_config());
 	println!("Spinning up database!");
 	let repo = Repo::new();
 	if repo.is_err()
@@ -38,7 +39,9 @@ pub fn rocket() -> rocket::Rocket
 
 	let repo = repo.unwrap();
 	println!("Seeding database!");
-	repos::seeder::seed(&repo);
+	if (seed) {
+		repos::seeder::seed(&repo);
+	}
 
 	let allowed_origins = AllowedOrigins::some_exact(&["http://localhost:5000"]);
 	let cors = rocket_cors::CorsOptions {

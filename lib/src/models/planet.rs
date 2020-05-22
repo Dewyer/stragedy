@@ -15,7 +15,7 @@ pub struct Planet
 	pub coordinate:PlanetCoordinate
 }
 
-#[derive(Serialize, Deserialize, Debug,PartialEq)]
+#[derive(Serialize, Deserialize, Debug,PartialEq,Clone)]
 pub struct PlanetCoordinate
 {
 	pub solar_system:i64,
@@ -47,7 +47,7 @@ pub struct Manpower
 
 impl Planet
 {
-	pub fn new() -> Self
+	pub fn new(coordinate:PlanetCoordinate) -> Self
 	{
 		Planet
 		{
@@ -55,7 +55,20 @@ impl Planet
 			industrial_components: PlanetResource::new(PlanetResourceType::IndustrialComponent),
 			computer_components: PlanetResource::new(PlanetResourceType::ComputerComponent),
 			organic_material: PlanetResource::new(PlanetResourceType::OrganicMaterial),
-			manpower: Manpower::new()
+			manpower: Manpower::new(),
+			coordinate
+		}
+	}
+}
+
+impl PlanetCoordinate
+{
+	pub fn new(system:i64,planet:i64) -> Self
+	{
+		Self
+		{
+			solar_system:system,
+			planet_index:planet
 		}
 	}
 }

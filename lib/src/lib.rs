@@ -4,6 +4,7 @@ pub mod responses;
 pub mod regex;
 pub mod error;
 pub mod models;
+pub mod config;
 
 #[derive(Serialize,Deserialize,Debug)]
 pub struct ApiResponse<T,E>{

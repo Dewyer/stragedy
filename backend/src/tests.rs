@@ -8,7 +8,7 @@ use lib::error::AuthError;
 #[test]
 pub fn register()
 {
-	let client = Client::new(super::rocket()).expect("valid rocket instance");
+	let client = Client::new(super::rocket(false)).expect("valid rocket instance");
 	let mut response = client.post("/api/register")
 		.header(ContentType::JSON)
 		.body(serde_json::to_string(&requests::CreatePlayerRequest{
@@ -27,7 +27,7 @@ pub fn register()
 #[test]
 pub fn login_and_use_jwt()
 {
-	let client = Client::new(super::rocket()).expect("valid rocket instance");
+	let client = Client::new(super::rocket(true)).expect("valid rocket instance");
 	let mut response = client.post("/api/login")
 		.header(ContentType::JSON)
 		.body(serde_json::to_string(&requests::LoginPlayerRequest{
