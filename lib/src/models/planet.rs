@@ -11,9 +11,16 @@ pub struct Planet
 	pub industrial_components:PlanetResource,
 	pub computer_components:PlanetResource,
 	pub organic_material:PlanetResource,
-	pub manpower:Manpower
+	pub manpower:Manpower,
+	pub coordinate:PlanetCoordinate
 }
 
+#[derive(Serialize, Deserialize, Debug,PartialEq)]
+pub struct PlanetCoordinate
+{
+	pub solar_system:i64,
+	pub planet_index:i64
+}
 
 #[derive(Serialize, Deserialize, Debug,Clone)]
 pub struct PlanetResource
