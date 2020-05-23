@@ -1,5 +1,11 @@
-use super::{Building,ResourceBuilding};
+use super::{Building};
 use crate::models::resource::GameRes;
+
+pub trait ResourceBuilding
+{
+	fn get_base_production() -> GameRes;
+}
+
 
 #[derive(Serialize, Deserialize, Debug,Clone)]
 pub struct IndustrialCBuilding

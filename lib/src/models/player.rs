@@ -23,6 +23,7 @@ pub struct Player
 #[derive(Serialize, Deserialize, Debug,Clone)]
 pub struct PlayerDto
 {
+	pub username:String,
 	pub galactic_credits:GameRes,
 	pub points:i32,
 	pub controlled_planets: Vec<PlanetInfoDto>
@@ -86,6 +87,7 @@ impl PlayerDto
 	{
 		Self
 		{
+			username:player.username.clone()
 			galactic_credits: player.galactic_credits,
 			points: player.points,
 			controlled_planets: planets.iter().map(|elem| PlanetInfoDto::from_planet(elem)).collect()

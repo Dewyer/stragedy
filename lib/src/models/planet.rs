@@ -1,5 +1,5 @@
 use crate::models::resource::GameRes;
-use crate::models::buildings::{resources, ResourceBuilding,Building};
+use crate::models::buildings::{resources,Building,resources::ResourceBuilding};
 use crate::error::AuthError::BadEmail;
 use chrono::prelude::*;
 
