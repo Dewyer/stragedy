@@ -84,7 +84,7 @@ impl From<Box<dyn Error>> for AuthError
 {
 	fn from(error: Box<dyn Error>) -> Self
 	{
-		Self::new_other(error.description())
+		Self::new_other(&format!("{:?}",error))
 	}
 }
 
@@ -92,7 +92,7 @@ impl From<Box<dyn Error>> for ApiError
 {
 	fn from(error: Box<dyn Error>) -> Self
 	{
-		Self::new_other(error.description())
+		Self::new_other(&format!("{:?}",error))
 	}
 }
 

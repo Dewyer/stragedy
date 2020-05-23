@@ -7,14 +7,14 @@ use chrono::prelude::*;
 pub struct Planet
 {
 	#[serde(rename = "_id")]
-	pub displayed_name:String,
-	pub controlled_by:bson::oid::ObjectId,
 	pub id: Option<bson::oid::ObjectId>,
 	pub industrial_components:PlanetResource,
 	pub computer_components:PlanetResource,
 	pub organic_material:PlanetResource,
 	pub manpower:Manpower,
 	pub coordinate:PlanetCoordinate,
+	pub displayed_name:String,
+	pub controlled_by:bson::oid::ObjectId,
 
 	//Buildings
 	pub industrial_components_maker : resources::IndustrialCBuilding,
@@ -45,7 +45,7 @@ pub struct PlanetResource
 	pub base_value:GameRes,
 	pub last_updated_timestamp:i64,
 	pub income_per_hour:GameRes,
-	pub storage_capacity: u64,
+	pub storage_capacity: i64
 }
 
 #[derive(Serialize,Deserialize,Debug,Clone)]

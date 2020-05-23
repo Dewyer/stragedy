@@ -5,12 +5,12 @@ use lib::responses;
 use crate::services;
 use lib::error::{AuthError, ApiError};
 
-pub fn login_get_jwt(client:&Client) -> String
+pub fn login_get_jwt(client:&Client,username:&str) -> String
 {
 	let mut response = client.post("/api/login")
 		.header(ContentType::JSON)
 		.body(serde_json::to_string(&requests::LoginPlayerRequest{
-			username:"test1".to_string(),
+			username:username.to_string(),
 			password:"Test12345".to_string()
 		}).unwrap())
 		.dispatch();
@@ -21,6 +21,10 @@ pub fn get_jwt_from_response(resp:&mut LocalResponse) -> String
 {
 	let bdy_str = resp.body_string().as_ref().unwrap().clone();
 	let out = serde_json::from_str::<lib::ApiResponse<responses::LoginPlayerResponse,AuthError>>(&bdy_str).expect("Couldn't deserialize jwt resp.");
+	if out.error != AuthError::NoError
+	{
+		println!("Login will fail : {:?}",out.error);
+	}
 	out.content.as_ref().unwrap().jwt.clone()
 }
 
@@ -29,7 +33,7 @@ pub fn get_client(seeded:bool) -> Client
 	Client::new(super::rocket(seeded)).expect("valid rocket instance")
 }
 
-pub fn register_user(client:&Client,username:&str,email:&str) -> LocalResponse
+pub fn register_user<'c>(client:&'c Client,username:&str,email:&str) -> LocalResponse<'c>
 {
 	client.post("/api/register")
 		.header(ContentType::JSON)
@@ -59,8 +63,9 @@ pub fn register()
 pub fn login_and_use_jwt()
 {
 	let client = get_client(true);
+	register_user(&client,"test1","test1@gmail.com");
 	// Npw lets use that for authorization
-	let jwt = login_get_jwt(&client);
+	let jwt = login_get_jwt(&client,"test1");
 	println!("trying jwt : {}",jwt);
 	let mut resp2 = client.get("/api/who")
 		.header(Header::new("Authorization", jwt))
@@ -75,11 +80,16 @@ pub fn login_and_use_jwt()
 pub fn base_info()
 {
 	let client = get_client(false);
-	let jwt = login_get_jwt(&client);
+	let mut reg_resp = register_user(&client,"test2","test2@gmail.com");
+	let reg_obj = serde_json::from_str::<ApiResponse<(),AuthError>>(&reg_resp.body_string().as_ref().unwrap().clone()).unwrap();
+	println!("Base reg resp: {:?}",reg_obj);
+	let jwt = login_get_jwt(&client,"test2");
 
 	let mut response = client.get("/api/base").header(Header::new("Authorization",jwt)).dispatch();
 	assert_eq!(response.status(),Status::Ok);
 	let r_obj = serde_json::from_str::<ApiResponse<responses::BaseResponse,ApiError>>(&response.body_string().as_ref().unwrap().clone()).unwrap();
 	assert_eq!(r_obj.error,ApiError::NoError);
 
+	assert!(r_obj.content.is_some());
+	assert!(r_obj.content.unwrap().player.username == "test2");
 }

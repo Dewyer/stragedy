@@ -115,4 +115,17 @@ where T : serde::Serialize + serde::Deserialize<'de>
 			Err(er)=> Err(ApiError::UpdateFailed)
 		}
 	}
+
+	pub fn delete_by_doc(&self,filter:Document) -> Result<i32,ApiError>
+	{
+		let res:Result<mongodb::results::DeleteResult,mongodb::error::Error>= self.collection.delete_many(filter,None);
+		match res
+		{
+			Ok(rr)=>
+			{
+				Ok(rr.deleted_count as i32)
+			},
+			Err(e)=> Err(ApiError::Other(format!("Mongodb Err: {:?}",e)))
+		}
+	}
 }

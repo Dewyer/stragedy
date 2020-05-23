@@ -87,7 +87,7 @@ impl PlayerDto
 	{
 		Self
 		{
-			username:player.username.clone()
+			username:player.username.clone(),
 			galactic_credits: player.galactic_credits,
 			points: player.points,
 			controlled_planets: planets.iter().map(|elem| PlanetInfoDto::from_planet(elem)).collect()
