@@ -27,7 +27,7 @@ pub struct PlanetResource
 {
 	pub type_v:PlanetResourceType,
 	pub base_value:GameRes,
-	pub last_updated_tick:i64,
+	pub last_updated_timestamp:i64,
 	pub income_per_hour:GameRes,
 }
 
@@ -86,7 +86,7 @@ impl PlanetResource
 				PlanetResourceType::ComputerComponent =>150,
 				PlanetResourceType::OrganicMaterial => 20
 			}),
-			last_updated_tick:Utc::now().timestamp(),
+			last_updated_timestamp:Utc::now().timestamp(),
 			income_per_hour: match typ
 			{
 				PlanetResourceType::IndustrialComponent => Building::IndustrialFactory(0).get_base_production(),
