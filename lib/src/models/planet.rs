@@ -1,18 +1,34 @@
 use crate::models::resource::GameRes;
-use crate::models::building::Building;
+use crate::models::buildings::{resources, ResourceBuilding,Building};
 use crate::error::AuthError::BadEmail;
 use chrono::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug,Clone)]
 pub struct Planet
 {
 	#[serde(rename = "_id")]
+	pub displayed_name:String,
+	pub controlled_by:bson::oid::ObjectId,
 	pub id: Option<bson::oid::ObjectId>,
 	pub industrial_components:PlanetResource,
 	pub computer_components:PlanetResource,
 	pub organic_material:PlanetResource,
 	pub manpower:Manpower,
-	pub coordinate:PlanetCoordinate
+	pub coordinate:PlanetCoordinate,
+
+	//Buildings
+	pub industrial_components_maker : resources::IndustrialCBuilding,
+	pub computer_components_maker : resources::ComputerCBuilding,
+	pub organic_material_maker : resources::OrganicMBuilding
+}
+
+#[derive(Serialize, Deserialize, Debug,Clone)]
+pub struct PlanetInfoDto
+{
+	pub id:bson::oid::ObjectId,
+	pub controlled_by:bson::oid::ObjectId,
+	pub display_name:String,
+	pub coordinates:PlanetCoordinate
 }
 
 #[derive(Serialize, Deserialize, Debug,PartialEq,Clone)]
@@ -29,6 +45,7 @@ pub struct PlanetResource
 	pub base_value:GameRes,
 	pub last_updated_timestamp:i64,
 	pub income_per_hour:GameRes,
+	pub storage_capacity: u64,
 }
 
 #[derive(Serialize,Deserialize,Debug,Clone)]
@@ -47,17 +64,32 @@ pub struct Manpower
 
 impl Planet
 {
-	pub fn new(coordinate:PlanetCoordinate) -> Self
+	pub fn new(controlled_by:bson::oid::ObjectId,coordinate:PlanetCoordinate) -> Self
 	{
 		Planet
 		{
+			controlled_by,
+			displayed_name: "Home".to_string(),
 			id: Some(bson::oid::ObjectId::new().unwrap()),
 			industrial_components: PlanetResource::new(PlanetResourceType::IndustrialComponent),
 			computer_components: PlanetResource::new(PlanetResourceType::ComputerComponent),
 			organic_material: PlanetResource::new(PlanetResourceType::OrganicMaterial),
 			manpower: Manpower::new(),
-			coordinate
+			coordinate,
+			industrial_components_maker:resources::IndustrialCBuilding::new(),
+			computer_components_maker: resources::ComputerCBuilding::new(),
+			organic_material_maker : resources::OrganicMBuilding::new()
 		}
+	}
+
+	pub fn get_cpy_id(&self) -> bson::oid::ObjectId
+	{
+		self.id.as_ref().unwrap().clone()
+	}
+
+	pub fn get_id(&self) ->&bson::oid::ObjectId
+	{
+		self.id.as_ref().unwrap()
 	}
 }
 
@@ -89,10 +121,11 @@ impl PlanetResource
 			last_updated_timestamp:Utc::now().timestamp(),
 			income_per_hour: match typ
 			{
-				PlanetResourceType::IndustrialComponent => Building::IndustrialFactory(0).get_base_production(),
-				PlanetResourceType::ComputerComponent =>Building::ComputerComponentFacility(0).get_base_production(),
-				PlanetResourceType::OrganicMaterial=> Building::OrganicMatterHarvester(0).get_base_production()
-			}
+				PlanetResourceType::IndustrialComponent =>resources::IndustrialCBuilding::get_base_production(),
+				PlanetResourceType::ComputerComponent =>resources::ComputerCBuilding::get_base_production(),
+				PlanetResourceType::OrganicMaterial=> resources::OrganicMBuilding::get_base_production()
+			},
+			storage_capacity:1000
 		}
 	}
 }
@@ -104,6 +137,20 @@ impl Manpower
 		Manpower
 		{
 			current_value:GameRes::new(120i64)
+		}
+	}
+}
+
+impl PlanetInfoDto
+{
+	pub fn from_planet(pl:&Planet) -> Self
+	{
+		Self
+		{
+			id: pl.id.as_ref().unwrap().clone(),
+			display_name:pl.displayed_name.clone(),
+			controlled_by:pl.controlled_by.clone(),
+			coordinates: pl.coordinate.clone()
 		}
 	}
 }

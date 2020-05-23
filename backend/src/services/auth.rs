@@ -33,9 +33,9 @@ pub fn create_player(data:requests::CreatePlayerRequest,repo :&Repo) -> Result<(
 
 	let mut player = Player::new(&data.username,&data.email,&pwd,&salt);
 	let starter_coordinate = services::planet_manager::get_starter_planet_coordinate(&repo)?;
-	let starter_planet = Planet::new(starter_coordinate);
+	let starter_planet = Planet::new(player.get_cpy_id(),starter_coordinate);
 
-	player.controlled_planet_ids.push(starter_planet.id.as_ref().unwrap().clone());
+	player.controlled_planet_ids.push(starter_planet.get_cpy_id());
 
 	let _res2 = repo.planet_repo.insert_model(&starter_planet)?;
     let _res = repo.player_repo.insert_model(&player)?;

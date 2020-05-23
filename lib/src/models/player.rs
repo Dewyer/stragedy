@@ -1,5 +1,6 @@
 use crate::models::resource::GameRes;
 use chrono::prelude::*;
+use crate::models::planet::{PlanetInfoDto, Planet};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Player
@@ -17,6 +18,14 @@ pub struct Player
 	pub galactic_credits:GameRes,
 	pub points:i32,
 	pub controlled_planet_ids: Vec<bson::oid::ObjectId>
+}
+
+#[derive(Serialize, Deserialize, Debug,Clone)]
+pub struct PlayerDto
+{
+	pub galactic_credits:GameRes,
+	pub points:i32,
+	pub controlled_planets: Vec<PlanetInfoDto>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -57,6 +66,29 @@ impl Player
 			galactic_credits:GameRes::new(0),
 			points:0,
 			controlled_planet_ids: vec![]
+		}
+	}
+
+	pub fn get_cpy_id(&self) -> bson::oid::ObjectId
+	{
+		self.id.as_ref().unwrap().clone()
+	}
+
+	pub fn get_id(&self) ->&bson::oid::ObjectId
+	{
+		self.id.as_ref().unwrap()
+	}
+}
+
+impl PlayerDto
+{
+	pub fn from_player_and_planets(player:&Player,planets:Vec<&Planet>) -> Self
+	{
+		Self
+		{
+			galactic_credits: player.galactic_credits,
+			points: player.points,
+			controlled_planets: planets.iter().map(|elem| PlanetInfoDto::from_planet(elem)).collect()
 		}
 	}
 }

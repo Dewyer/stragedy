@@ -55,7 +55,9 @@ pub fn rocket(seed:bool) -> rocket::Rocket
 	rocket::ignite().mount("/api", routes![index,
         crate::controllers::public_sites::register,
 		crate::controllers::public_sites::login,
-		crate::controllers::public_sites::who_am_i
+		crate::controllers::public_sites::who_am_i,
+		crate::controllers::game::base_info,
+		crate::controllers::game::galaxy_info
     ])
 	.manage(repo)
 	.attach(cors)

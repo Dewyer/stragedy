@@ -1,9 +1,19 @@
-use lib::models::planet::PlanetCoordinate;
+use lib::models::planet::{PlanetCoordinate, Planet};
 use lib::error::ApiError;
 use crate::repos::Repo;
 use crate::services;
 use rand::Rng;
 use lib::models::galaxy::GalaxyUtil;
+use bson::oid::ObjectId;
+use bson::Document;
+
+pub fn get_all_planets_of_player(pid:bson::oid::ObjectId,repo:&Repo) ->Result<Vec<Planet>,ApiError>
+{
+	let mut f_doc = Document::new();
+	f_doc.insert("controlled_by",pid.clone());
+	let planets = repo.planet_repo.find_all_like(f_doc)?;
+	Ok(planets)
+}
 
 pub fn get_starter_planet_coordinate(repo:&Repo) -> Result<PlanetCoordinate,ApiError>
 {
