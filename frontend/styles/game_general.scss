@@ -1,0 +1,27 @@
+
+.game-container
+{
+	display: flex;
+	justify-content: space-between;
+	align-content: flex-start;
+
+	& .middle-panel
+	{
+
+	}
+}
+
+.game-menu-container
+{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+
+	& .menu-button
+	{
+		padding: 0.5rem 0.7rem;
+		font-size: 15pt;
+		margin-bottom: 0.9rem;
+	}
+}

@@ -10,7 +10,7 @@ pub struct App
     console:ConsoleService
 }
 
-#[derive(Switch, Debug,Clone)]
+#[derive(Switch, Debug,Clone,PartialEq)]
 pub enum AppRoute {
 	#[to="/game"]
 	Game,

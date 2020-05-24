@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn pack-up && serve ./pkg",
-    "pack-up":"yarn build && yarn build-styles && yarn copy-public && yarn bundle",
+    "pack-up": "yarn build && yarn build-styles && yarn copy-public && yarn bundle",
     "build": "wasm-pack build --target web",
     "bundle": "rollup ./main.js --format iife --file ./pkg/bundle.js",
     "build-styles": "sass ./styles/app.scss ./pkg/app.css",
@@ -16,6 +16,6 @@
   "dependencies": {
     "copy-dir": "^1.2.0",
     "sass": "^1.26.5",
-    "serve": "^11.3.0"
+    "serve": "^11.3.1"
   }
 }

@@ -6,17 +6,37 @@ use http::Response;
 use yew::services::fetch::{FetchService,FetchTask};
 use yew::prelude::*;
 use crate::api;
-use lib::responses::LoginPlayerResponse;
+use lib::responses::*;
+use http::method::Method;
+use yew::services::StorageService;
+use yew::services::storage::Area;
 
 pub const SERVER_URL:&str = "http://localhost:8000";
 //https://envpvvdbty7wo.x.pipedream.net/
 //pub const SERVER_URL:&str = "https://envpvvdbty7wo.x.pipedream.net";
 
-pub fn make_request<T>(data:T,route:&str) -> Result<Request<Result<String,anyhow::Error>>,serde_json::error::Error>
+pub fn make_request<T>(data:T,route:&str,method:Method,auth:Option<String>) -> Result<Request<Result<String,anyhow::Error>>,serde_json::error::Error>
 where T:serde::Serialize
 {
-	let body_str = serde_json::to_string(&data)?;
-	Ok(Request::builder().method(http::method::Method::POST).uri(format!("{}{}",SERVER_URL,route)).header("Content-Type","application/json").body(Ok(body_str)).unwrap())
+	let mut req = Request::builder().uri(format!("{}{}",SERVER_URL,route));
+	if let Some(auth_str) = auth
+	{
+		req = req.header("Authorization",&auth_str);
+	}
+
+	match method
+	{
+		Method::GET =>
+		{
+			Ok(req.body(Ok("".to_string())).unwrap())
+		},
+		_ =>
+		{
+			let body_str = serde_json::to_string(&data)?;
+			req = req.header("Content-Type","application/json");
+			Ok(req.body(Ok(body_str)).unwrap())
+		}
+	}
 }
 
 fn parse_api_response<D,E>(resp:Response<Result<String,anyhow::Error>>) -> Result<Option<D>,E>
@@ -43,10 +63,29 @@ where E: lib::error::LibError, D: serde::de::DeserializeOwned, D: Clone
 	return Err(E::get_server_error())
 }
 
-pub fn make_api_request<DataIn,ResponseData,ResponseErr,ModellT,Func>(route:&str,data:DataIn,to_msg:Func,link:&ComponentLink<ModellT>) -> Result<FetchTask,ApiError>
+pub fn make_api_request<DataIn,ResponseData,ResponseErr,ModellT,Func>(route:&str,data:DataIn,method:Method,authed:bool,to_msg:Func,link:&ComponentLink<ModellT>) -> Result<FetchTask,ApiError>
 where Func: Fn(Result<Option<ResponseData>,ResponseErr>) -> ModellT::Message +'static , ModellT : yew::Component, ResponseErr: lib::error::LibError, DataIn: serde::Serialize, ResponseData:Clone, ResponseData: serde::de::DeserializeOwned
 {
-	let req_res = api::make_request(data,route);
+	let auth_opt = if authed
+	{
+		let local_res = StorageService::new(Area::Local);
+		let mut local = match local_res
+		{
+			Ok(ll)=> ll,
+			Err(e)=>
+			{
+				return Err(ApiError::Other("No local storage".to_string()));
+			}
+		};
+		let ls_res = local.restore::<Result<String,anyhow::Error>>("jwt");
+
+		Some(ls_res.unwrap())
+	}else
+	{
+		None
+	};
+
+	let req_res = api::make_request(data,route,method,auth_opt);
 	if let Ok(req) = req_res
 	{
 		let task:Result<FetchTask,anyhow::Error> = FetchService::new().fetch(
@@ -70,18 +109,14 @@ where Func: Fn(Result<Option<ResponseData>,ResponseErr>) -> ModellT::Message +'s
 
 macro_rules! endpoint
 {
-	($name:ident,$route:expr,$Dat:ident,$Out:ident,$Err:ident) => (
+	($name:ident,$route:expr,$method:expr,$authed:expr,$Dat:ty,$Out:ty,$Err:ty) => (
 	pub fn $name<T,F>(data:$Dat,link:&ComponentLink<T>,to_msg:F) -> Result<FetchTask,ApiError>
 	where F: Fn(Result<Option<$Out>,$Err>) -> T::Message +'static , T : yew::Component
 	{
-		make_api_request($route,data,to_msg,link)
+		make_api_request($route,data,$method,$authed,to_msg,link)
 	});
 }
 
-pub fn register<T,F>(data:CreatePlayerRequest,link:&ComponentLink<T>,to_msg:F) -> Result<FetchTask,ApiError>
-where F: Fn(Result<Option<()>,AuthError>) -> T::Message +'static , T : yew::Component
-{
-	make_api_request("/api/register",data,to_msg,link)
-}
-
-endpoint!(login,"/api/login",LoginPlayerRequest,LoginPlayerResponse,AuthError);
+endpoint!(register,"/api/register",Method::POST,false,CreatePlayerRequest,(),AuthError);
+endpoint!(login,"/api/login",Method::POST,false,LoginPlayerRequest,LoginPlayerResponse,AuthError);
+endpoint!(base_info,"/base_info",Method::GET,true,(),BaseResponse,ApiError);

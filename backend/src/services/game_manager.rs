@@ -12,6 +12,7 @@ pub fn get_base_data(player:&Player,repo:&Repo) -> Result<BaseResponse,ApiError>
 	Ok(BaseResponse
 	{
 		player:p_dto,
-		base_planet:planets.remove(0)
+		base_planet:planets.remove(0),
+		config:services::config::get_config().clone()
 	})
 }
