@@ -39,7 +39,7 @@ impl Component for GameRoute {
 			api::base_info((),&self.link,|resp|
 			{
 				panic!();
-			})
+			});
 		}
 	}
 
@@ -50,7 +50,9 @@ impl Component for GameRoute {
 					<img src={"/static/icon.png"} class={"icon-img"}/>
 					<GameMenu />
 				</div>
-				<div class={"middle-panel"}></div>
+				<div class={"middle-panel"}>
+
+				</div>
             </div>
         }
 	}
