@@ -4,6 +4,8 @@ use yew::{ComponentLink};
 use yew_router::{Switch,prelude::*};
 use crate::routes::{register_route::RegisterRoute, index_route::IndexRoute,game_route::GameRoute};
 use yew_router::switch::Permissive;
+use crate::handlers::HandlerError;
+use crate::routes::error_route::ErrorRoute;
 
 pub struct App
 {
@@ -18,6 +20,8 @@ pub enum AppRoute {
     Register,
 	#[to= "/404"]
 	PageNotFound(Permissive<String>),
+	#[to="/error"]
+	Error,
     #[to = "/"]
     Index
 }
@@ -51,6 +55,7 @@ impl Component for App {
                                 AppRoute::Register => html!{<RegisterRoute />},
 								AppRoute::PageNotFound(Permissive(Some(rt))) => html!{<p class={"four-o-four"}>{format!("Page not found : {} :/",rt.clone())}</p>},
 								AppRoute::PageNotFound(Permissive(None)) => html!{<p class={"four-o-four"}>{"Page not found!"}</p>},
+								AppRoute::Error => html!{<ErrorRoute />},
                                 AppRoute::Index => html!{<IndexRoute />}
                             }
                         })

@@ -7,6 +7,7 @@ where Self : PartialEq, Self:serde::Serialize,Self:Clone, Self: serde::de::Deser
 	fn get_no_error() -> Self where Self: Sized;
 	fn new_other(ss:&str) -> Self where Self: Sized;
 	fn get_server_error() -> Self where Self: Sized;
+	fn get_unauthorized_error() -> Self where Self: Sized;
 }
 
 #[derive(Debug,Clone,Deserialize,Serialize,PartialEq)]
@@ -17,7 +18,8 @@ pub enum ApiError
 	Other(String),
 	AuthError,
 	ServerError,
-	NoError
+	NoError,
+	UnAuth
 }
 
 #[derive(Debug,Clone,Deserialize,Serialize,PartialEq)]
@@ -30,7 +32,8 @@ pub enum AuthError
 	NoUser,
 	WrongPassword,
 	ServerError,
-	NoError
+	NoError,
+	UnAuth
 }
 
 impl Error for ApiError{}
@@ -51,6 +54,10 @@ impl LibError for ApiError
 	fn get_server_error() -> Self {
 		ApiError::ServerError
 	}
+
+	fn get_unauthorized_error() -> Self where Self: Sized {
+		ApiError::UnAuth
+	}
 }
 
 impl LibError for AuthError
@@ -65,6 +72,10 @@ impl LibError for AuthError
 
 	fn get_server_error() -> Self {
 		AuthError::ServerError
+	}
+
+	fn get_unauthorized_error() -> Self where Self: Sized {
+		AuthError::UnAuth
 	}
 }
 

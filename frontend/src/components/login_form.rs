@@ -123,7 +123,7 @@ impl LoginForm
 		match resp_task
 		{
 			Ok(task) => self.link.send_message(Msg::StartFetch(task)),
-			Err(e)=> self.link.send_message(Msg::OnGotError("Server error.".to_string()))
+			Err(e)=> self.link.send_message(Msg::OnGotError(format!("Couldn't send request: {}",e)))
 		}
 	}
 

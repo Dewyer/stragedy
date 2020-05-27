@@ -1,7 +1,7 @@
 use lib::requests::*;
 use lib::{ApiResponse};
 use lib::error::{AuthError,ApiError};
-use http::Request;
+use http::{Request, StatusCode};
 use http::Response;
 use yew::services::fetch::{FetchService,FetchTask};
 use yew::prelude::*;
@@ -10,33 +10,24 @@ use lib::responses::*;
 use http::method::Method;
 use yew::services::StorageService;
 use yew::services::storage::Area;
+use stdweb::unstable::TryInto;
+use crate::handlers;
+use yew::format::Nothing;
 
 pub const SERVER_URL:&str = "http://localhost:8000";
 //https://envpvvdbty7wo.x.pipedream.net/
 //pub const SERVER_URL:&str = "https://envpvvdbty7wo.x.pipedream.net";
 
-pub fn make_request<T>(data:T,route:&str,method:Method,auth:Option<String>) -> Result<Request<Result<String,anyhow::Error>>,serde_json::error::Error>
-where T:serde::Serialize
+fn start_building_request(route:&str,method:Method,auth:Option<String>) -> http::request::Builder
 {
 	let mut req = Request::builder().uri(format!("{}{}",SERVER_URL,route));
+	req = req.method(method.clone());
+
 	if let Some(auth_str) = auth
 	{
 		req = req.header("Authorization",&auth_str);
 	}
-
-	match method
-	{
-		Method::GET =>
-		{
-			Ok(req.body(Ok("".to_string())).unwrap())
-		},
-		_ =>
-		{
-			let body_str = serde_json::to_string(&data)?;
-			req = req.header("Content-Type","application/json");
-			Ok(req.body(Ok(body_str)).unwrap())
-		}
-	}
+	req
 }
 
 fn parse_api_response<D,E>(resp:Response<Result<String,anyhow::Error>>) -> Result<Option<D>,E>
@@ -85,26 +76,38 @@ where Func: Fn(Result<Option<ResponseData>,ResponseErr>) -> ModellT::Message +'s
 		None
 	};
 
-	let req_res = api::make_request(data,route,method,auth_opt);
-	if let Ok(req) = req_res
-	{
-		let task:Result<FetchTask,anyhow::Error> = FetchService::new().fetch(
-			req,
-			link.callback(move |response:Response<Result<String,anyhow::Error>>| {
-				if response.status().is_success() {
-					let parsed = api::parse_api_response::<ResponseData,ResponseErr>(response);
-					to_msg(parsed)
-				} else {
-					to_msg(Err(ResponseErr::get_server_error()))
-				}
-			})
-		);
-
-		if let Ok(ta) = task {
-			return Ok(ta);
+	let do_fn = move |response:Response<Result<String,anyhow::Error>>| {
+		if response.status().is_success() {
+			let parsed = api::parse_api_response::<ResponseData,ResponseErr>(response);
+			to_msg(parsed)
 		}
-	}
-	Err(ApiError::ServerError)
+		else if response.status() == StatusCode::from_u16(401).unwrap()
+		{
+			//Unauthed
+			handlers::handle_unauthed();
+			to_msg(Err(ResponseErr::get_unauthorized_error()))
+		}
+		else {
+			to_msg(Err(ResponseErr::get_server_error()))
+		}
+	};
+	let mut req_builder = api::start_building_request(route,method.clone(),auth_opt);
+	let cb = link.callback(do_fn);
+	let task_res:Result<FetchTask,anyhow::Error> = match method
+	{
+		Method::GET => {
+			let req = req_builder.body(Nothing).map_err(|_| ApiError::Other("Couldn't construct get request".to_string()))?;
+			FetchService::new().fetch(req, cb)
+		},
+		_=>
+		{
+			let body_str = serde_json::to_string(&data).map_err(|_| ApiError::Other("Coudn't serialize request body.".to_string()))?;
+			req_builder = req_builder.header("Content-Type","application/json");
+			let req = req_builder.body(Ok(body_str)).map_err(|_| ApiError::Other("Couldn't construct post request.".to_string()))?;
+			FetchService::new().fetch(req,cb)
+		}
+	};
+	task_res.map_err(|e| ApiError::Other(format!("Couldn't create request : {}",e)))
 }
 
 macro_rules! endpoint
@@ -119,4 +122,4 @@ macro_rules! endpoint
 
 endpoint!(register,"/api/register",Method::POST,false,CreatePlayerRequest,(),AuthError);
 endpoint!(login,"/api/login",Method::POST,false,LoginPlayerRequest,LoginPlayerResponse,AuthError);
-endpoint!(base_info,"/base_info",Method::GET,true,(),BaseResponse,ApiError);
+endpoint!(base_info,"/api/base",Method::GET,true,(),BaseResponse,ApiError);

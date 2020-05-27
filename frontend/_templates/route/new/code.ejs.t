@@ -7,7 +7,7 @@ pub struct <%= name %> {
 	link: ComponentLink<Self>
 }
 
-route enum Msg {
+pub enum Msg {
 
 }
 

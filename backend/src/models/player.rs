@@ -18,6 +18,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for PlayerGuard {
 
 	fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error>
 	{
+		let bad_response_status = Status::from_code(401).unwrap();
 		let repo = request.guard::<State<Repo>>();
 
 		if let Outcome::Success(rr) = repo
@@ -26,7 +27,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for PlayerGuard {
 			let auth_header = request.headers().get_one("Authorization");
 			if auth_header.is_none()
 			{
-				Outcome::Failure((Status::BadRequest,AuthFail::NoToken))
+				Outcome::Failure((bad_response_status,AuthFail::NoToken))
 			}
 			else
 			{
@@ -39,7 +40,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for PlayerGuard {
 						let oid = bson::oid::ObjectId::with_string(&jwt.claims.player_id);
 						if let Err(err) = oid
 						{
-							return Outcome::Failure((Status::BadRequest,AuthFail::InvalidToken));
+							return Outcome::Failure((bad_response_status,AuthFail::InvalidToken));
 						}
 						let target_user = repo.player_repo.find_by_id(oid.unwrap());
 						match target_user
@@ -55,25 +56,25 @@ impl<'a, 'r> FromRequest<'a, 'r> for PlayerGuard {
 										}
 										else
 										{
-											Outcome::Failure((Status::BadRequest,AuthFail::InvalidToken))
+											Outcome::Failure((bad_response_status,AuthFail::InvalidToken))
 										}
 									},
-									None=>Outcome::Failure((Status::BadRequest,AuthFail::InvalidToken))
+									None=>Outcome::Failure((bad_response_status,AuthFail::InvalidToken))
 								}
 							},
-							None=> Outcome::Failure((Status::BadRequest,AuthFail::InvalidToken))
+							None=> Outcome::Failure((bad_response_status,AuthFail::InvalidToken))
 						}
 					}
 					Err(eke)=>{
 						println!("why fail jwt : {:?}",eke);
-						Outcome::Failure((Status::BadRequest,AuthFail::InvalidToken))
+						Outcome::Failure((bad_response_status,AuthFail::InvalidToken))
 					}
 				}
 			}
 		}
 		else
 		{
-			Outcome::Failure((Status::BadRequest,AuthFail::DbError))
+			Outcome::Failure((bad_response_status,AuthFail::DbError))
 		}
     }
 }

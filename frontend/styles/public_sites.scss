@@ -125,3 +125,19 @@
 	padding: 0.6rem;
 }
 
+.error-site-container
+{
+	padding: 3rem;
+	& h
+	{
+		font-size: 2rem;
+		font-weight: bold;
+		color: $orange
+	}
+
+	& p
+	{
+		font-size: 1.1rem;
+		font-style: italic;
+	}
+}
